@@ -7,7 +7,10 @@ const server = http.createServer();
 const io = new Server(server, {
   cors: {
     // Allow Next.js (port 3000) and your local IP
-    origin: ["http://localhost:3000", "http://192.168.1.60:3000"],
+    origin: [
+      "https://main.d2z4mrmjwbw1fp.amplifyapp.com",
+      "http://localhost:3000",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
