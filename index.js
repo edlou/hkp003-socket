@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// server start on port (default 3041)
+// server start on port (App Runner uses 8080, local uses 3041)
 const PORT = process.env.PORT || 3041;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Socket.IO Server running on port ${PORT}`);
