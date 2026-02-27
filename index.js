@@ -8,7 +8,8 @@ const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
       const allowed = [
-        'https://main.d2z4mrmjwbw1fp.amplifyapp.com', // production
+        'https://main.d2z4mrmjwbw1fp.amplifyapp.com', // production - Amplify
+        'https://hkp003.efx-design.com', // production - custom domain
         'http://localhost:3040', // local - testing for desktop
       ];
       // local - serveo tunnels (URL changes each time) - testing for mobile
