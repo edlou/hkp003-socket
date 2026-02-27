@@ -1,42 +1,57 @@
-// server/index.js
-import http from "http";
-import { Server } from "socket.io";
+import http from 'http';
+import { Server } from 'socket.io';
 
 const server = http.createServer();
 
+// setting cors for socket server
 const io = new Server(server, {
   cors: {
-    // Allow Next.js (port 3000) and your local IP
-    origin: [
-      "https://main.d2z4mrmjwbw1fp.amplifyapp.com",
-      "http://localhost:3000",
-    ],
-    methods: ["GET", "POST"],
+    origin: (origin, callback) => {
+      const allowed = [
+        'https://main.d2z4mrmjwbw1fp.amplifyapp.com', // production
+        'http://localhost:3040', // local - testing for desktop
+      ];
+      // local - serveo tunnels (URL changes each time) - testing for mobile
+      if (
+        !origin ||
+        allowed.includes(origin) ||
+        origin.endsWith('.serveousercontent.com')
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('CORS not allowed'));
+      }
+    },
+    methods: ['GET', 'POST'],
     credentials: true,
   },
 });
 
-io.on("connection", (socket) => {
+// open a session
+io.on('connection', (socket) => {
+  // 1. user connects
   console.log(`User connected: ${socket.id}`);
 
-  // When a phone or monitor joins a specific room
-  socket.on("joinSession", (sessionId) => {
+  // 2. user join the session
+  socket.on('joinSession', (sessionId) => {
     socket.join(sessionId);
     console.log(`Socket ${socket.id} joined room: ${sessionId}`);
   });
 
-  // When the phone sends tilt data, broadcast it to everyone in that room
-  socket.on("tiltCommand", (data) => {
+  // 3. interactions sent to socket
+  socket.on('tiltCommand', (data) => {
     // data = { sessionId: 'xyz', angle: 15 }
-    io.to(data.sessionId).emit("updateDisplay", data);
+    io.to(data.sessionId).emit('updateDisplay', data);
   });
 
-  socket.on("disconnect", () => {
+  // 4. user disconnects
+  socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
   });
 });
 
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Socket.IO Server running on port ${PORT}`);
+// server start on port (default 3041)
+const PORT = process.env.PORT || 3041;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Socket.IO Server running on port ${PORT}`);
 });
