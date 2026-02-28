@@ -46,8 +46,8 @@ io.on('connection', (socket) => {
 
   // 4. result sent to all in session
   socket.on('showResult', (data) => {
-    // data = { sessionId: 'xyz', number: 42 }
-    console.log(`Sending result ${data.number} to session ${data.sessionId}`);
+    // data = { sessionId: 'xyz', reading: { number, category, poem } }
+    console.log(`Sending result #${data.reading?.number} (${data.reading?.category}) to session ${data.sessionId}`);
     io.to(data.sessionId).emit('displayResult', data);
   });
 
