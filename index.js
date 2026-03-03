@@ -38,20 +38,32 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} joined room: ${sessionId}`);
   });
 
-  // 3. interactions sent to socket
+  // 3. control page loaded (user scanned QR)
+  socket.on('controlJoined', (data) => {
+    console.log(`Control joined session: ${data.sessionId}`);
+    io.to(data.sessionId).emit('controlJoined');
+  });
+
+  // 4. control is ready (user tapped to start)
+  socket.on('controlReady', (data) => {
+    console.log(`Control ready in session: ${data.sessionId}`);
+    io.to(data.sessionId).emit('controlReady');
+  });
+
+  // 5. interactions sent to socket
   socket.on('tiltCommand', (data) => {
     // data = { sessionId: 'xyz', angle: 15 }
     io.to(data.sessionId).emit('updateDisplay', data);
   });
 
-  // 4. result sent to all in session
+  // 6. result sent to all in session
   socket.on('showResult', (data) => {
     // data = { sessionId: 'xyz', reading: { number, category, poem } }
     console.log(`Sending result #${data.reading?.number} (${data.reading?.category}) to session ${data.sessionId}`);
     io.to(data.sessionId).emit('displayResult', data);
   });
 
-  // 5. user disconnects
+  // 7. user disconnects
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
   });
